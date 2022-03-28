@@ -5,27 +5,31 @@ import * as THREE from 'three';
 import Stats from './three/examples/jsm/libs/stats.module.js';
 
 import {
-    GLTFLoader
-} from './three/examples/jsm/loaders/GLTFLoader.js';
-
-import {
     Octree
 } from './three/examples/jsm/math/Octree.js';
-import {
-    OctreeHelper
-} from './three/examples/jsm/helpers/OctreeHelper.js';
 
 import {
     Capsule
 } from './three/examples/jsm/math/Capsule.js';
 
 import {
+    GLTFLoader
+} from '../three/examples/jsm/loaders/GLTFLoader.js';
+
+import {
+    OctreeHelper
+} from '../three/examples/jsm/helpers/OctreeHelper.js';
+
+import {
     GUI
-} from './three/examples/jsm/libs/lil-gui.module.min.js';
+} from '../three/examples/jsm/libs/lil-gui.module.min.js';
+
+
 
 const clock = new THREE.Clock();
 
 const scene = new THREE.Scene();
+scene.name = "TestName";
 scene.background = new THREE.Color(0x88ccee);
 scene.fog = new THREE.Fog(0x88ccee, 0, 50);
 
@@ -69,7 +73,7 @@ stats.domElement.style.position = 'absolute';
 stats.domElement.style.top = '0px';
 container.appendChild(stats.domElement);
 
-const GRAVITY = 0.1;
+const GRAVITY = 0.3;
 
 /**
  * 
@@ -79,8 +83,8 @@ const GRAVITY = 0.1;
  * 
  */
 
-const NUM_SPHERES = 100;
-const SPHERE_RADIUS = 0.2;
+//const NUM_SPHERES = 100;
+//const SPHERE_RADIUS = 0.2;
 
 /**
  * 
@@ -101,15 +105,16 @@ const STEPS_PER_FRAME = 5;
  * 
  * 
  */
-const sphereGeometry = new THREE.IcosahedronGeometry(SPHERE_RADIUS, 5);
-const sphereMaterial = new THREE.MeshLambertMaterial({
+//const sphereGeometry = new THREE.IcosahedronGeometry(SPHERE_RADIUS, 5);
+/*const sphereMaterial = new THREE.MeshLambertMaterial({
     color: 0xbbbb44
 });
+*/
 
-const spheres = [];
-let sphereIdx = 0;
+//const spheres = [];
+//let sphereIdx = 0;
 
-for (let i = 0; i < NUM_SPHERES; i++) {
+/*for (let i = 0; i < NUM_SPHERES; i++) {
 
     const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
     sphere.castShadow = true;
@@ -124,7 +129,7 @@ for (let i = 0; i < NUM_SPHERES; i++) {
     });
 
 }
-
+*/
 
 /**
  * 
@@ -165,10 +170,11 @@ document.addEventListener('keyup', (event) => {
 /**
  * 
  * 
- * Esto es el disparador de la pelotita. Borrar
+ * Esto detecta a donde apunta el mouse. NO Borrar
  * 
  * 
  */
+
 container.addEventListener('mousedown', () => {
 
     document.body.requestPointerLock();
@@ -177,12 +183,20 @@ container.addEventListener('mousedown', () => {
 
 });
 
+/**
+ * 
+ * 
+ * Esto es el disparador de la pelotita. Borrar
+ * 
+ * 
+ */
+/*
 document.addEventListener('mouseup', () => {
 
     if (document.pointerLockElement !== null) throwBall();
 
 });
-
+*/
 /**
  * 
  * 
@@ -221,6 +235,7 @@ function onWindowResize() {
  * 
  * 
  */
+/*
 function throwBall() {
 
     const sphere = spheres[sphereIdx];
@@ -240,6 +255,7 @@ function throwBall() {
     sphereIdx = (sphereIdx + 1) % spheres.length;
 
 }
+*/
 /**
  * 
  * 
@@ -292,7 +308,6 @@ function updatePlayer(deltaTime) {
     playerCollisions();
 
     camera.position.copy(playerCollider.end);
-
 }
 /**
  * 
@@ -301,6 +316,7 @@ function updatePlayer(deltaTime) {
  * 
  * 
  */
+/*
 function playerSphereCollision(sphere) {
 
     const center = vector1.addVectors(playerCollider.start, playerCollider.end).multiplyScalar(0.5);
@@ -333,7 +349,8 @@ function playerSphereCollision(sphere) {
     }
 
 }
-
+*/
+/*
 function spheresCollisions() {
 
     for (let i = 0, length = spheres.length; i < length; i++) {
@@ -369,7 +386,8 @@ function spheresCollisions() {
     }
 
 }
-
+*/
+/*
 function updateSpheres(deltaTime) {
 
     spheres.forEach(sphere => {
@@ -405,7 +423,7 @@ function updateSpheres(deltaTime) {
     }
 
 }
-
+*/
 /**
  * 
  * 
@@ -476,7 +494,24 @@ function controls(deltaTime) {
 
 }
 
-const loader = new GLTFLoader().setPath('./three/examples/models/gltf/');
+
+function teleportPlayerIfOob() {
+
+    if (camera.position.y <= -25) {
+
+        playerCollider.start.set(0, 0.35, 0);
+        playerCollider.end.set(0, 1, 0);
+        playerCollider.radius = 0.35;
+        camera.position.copy(playerCollider.end);
+        camera.rotation.set(0, 0, 0);
+
+    }
+
+}
+
+
+
+const loader = new GLTFLoader().setPath('../three/examples/models/gltf/');
 
 /**
  * 
@@ -537,17 +572,17 @@ loader.load('collision-world.glb', (gltf) => {
  * 
  */
 
-loader.load( '../../../../models/track.glb', function ( gltf ) {
+loader.load('../../../../models/track.glb', function (gltf) {
 
-    gltf.scale.set(0.1, 0.1, 0.1);
-	scene.add( gltf.scene );
-    
+    //gltf.scale.set(0.1, 0.1, 0.1);
+    scene.add(gltf.scene);
 
-}, undefined, function ( error ) {
 
-	console.error( error );
+}, undefined, function (error) {
 
-} );
+    console.error(error);
+
+});
 
 /**
  * 
@@ -564,15 +599,38 @@ loader.load( '../../../../models/track.glb', function ( gltf ) {
  * 
  */
 
-loader.load( '../../../../models/911.glb', function ( gltf ) {
+loader.load('../../../../models/911.glb', function (gltf) {
 
-	scene.add( gltf.scene );
+    scene.add(gltf.scene);
 
-}, undefined, function ( error ) {
+    worldOctree.fromGraphNode(gltf.scene);
 
-	console.error( error );
+    gltf.scene.traverse(child => {
 
-} );
+        if (child.isMesh) {
+
+            child.castShadow = true;
+            child.receiveShadow = true;
+
+            if (child.material.map) {
+
+                child.material.map.anisotropy = 4;
+            }
+
+        }
+
+    });
+        //Tengo que agregarle el mesh collider
+        //Tengo que agregarle una velocidad/peso para la gravedad
+
+}, undefined, function (error) {
+
+    console.error(error);
+
+});
+
+
+
 
 /**
  * 
@@ -583,19 +641,17 @@ loader.load( '../../../../models/911.glb', function ( gltf ) {
  */
 
 
-function teleportPlayerIfOob() {
 
-    if (camera.position.y <= -25) {
 
-        playerCollider.start.set(0, 0.35, 0);
-        playerCollider.end.set(0, 1, 0);
-        playerCollider.radius = 0.35;
-        camera.position.copy(playerCollider.end);
-        camera.rotation.set(0, 0, 0);
 
-    }
 
-}
+
+
+
+
+
+
+
 
 
 function animate() {
@@ -612,7 +668,7 @@ function animate() {
         updatePlayer(deltaTime);
 
         //Esto se borraría
-        updateSpheres(deltaTime);
+        //updateSpheres(deltaTime);
 
         teleportPlayerIfOob();
 
